@@ -10,17 +10,37 @@ app.style.width = "100vw";
 app.style.fontFamily = "Arial, sans-serif";
 document.body.appendChild(app);
 
-//Preferencia
-let theme = localStorage.getItem("theme") || "light";
 
+
+//----------------Blanco y Negro--------------------------
 // Contenedor de mensajes principal
 const messagesContainer = document.createElement("div");
 messagesContainer.style.flex = "1";
-messagesContainer.style.overflowY = "auto";
+messagesContainer.style.overflowY = "auto"; 
 messagesContainer.style.padding = "10px";
 app.appendChild(messagesContainer);
 
-// Cambiar tema
+//Preferencia
+let theme = localStorage.getItem("theme") || "light";
+
+
+//Funcion para cambiar el tema
+function changeTheme() {
+   if (theme === "dark") {
+      document.body.style.backgroundColor = "black";
+      document.body.style.color = "white";
+      messagesContainer.style.backgroundColor = "black";
+      messagesContainer.style.color = "white";
+   } else {
+      document.body.style.backgroundColor = "white";
+      document.body.style.color = "black";
+      messagesContainer.style.backgroundColor = "white";
+      messagesContainer.style.color = "black";
+   }
+}
+changeTheme();
+
+// Cambiar tema botón
 const themeButton = document.createElement("button");
 themeButton.textContent = "Cambiar tema";
 themeButton.style.position = "absolute";
@@ -31,9 +51,42 @@ themeButton.style.cursor = "pointer";
 themeButton.addEventListener("click", () => {
    theme = theme === "dark" ? "light" : "dark";
    localStorage.setItem("theme", theme);
+   changeTheme();
 }
 );
 app.appendChild(themeButton);
+
+// ------------------------------
+
+// -----------------Boton para cambiar de usuario-----------------------
+
+let User = localStorage.getItem("username") || "Anónimo";
+
+//Crear boton
+const userButton = document.createElement("button");
+userButton.textContent = "Cambiar usuario";
+userButton.style.position = "absolute";
+userButton.style.top = "60px";
+userButton.style.right = "10px";
+userButton.style.padding = "8px 16px";
+userButton.style.cursor = "pointer";
+userButton.style.border = "1px solid #ccc";
+userButton.style.borderRadius = "5px";
+userButton.style.backgroundColor = "#f8f9fa";
+
+//cambiar de usuario
+userButton.addEventListener("click", () => {
+   const newUser = prompt("Ingresa tu nombre de usuario:");
+   if (newUser && newUser.trim() !== "") {
+      username = newUser.trim();
+      localStorage.setItem("username", username);
+      userButton.textContent = "Usuario: " + username;
+   }
+});
+app.appendChild(userButton);
+
+
+// -------------Contendores de mensajes-----------------
 
 // Contenedor de entrada de texto
 const inputContainer = document.createElement("div");
@@ -46,7 +99,7 @@ const inputField = document.createElement("input");
 inputField.type = "text";
 inputField.placeholder = "Escribe tu mensaje...";
 inputField.style.flex = "1";
-inputField.style.padding = "8px";
+inputField.style.padding = "15px";
 inputField.style.fontSize = "16px";
 inputField.maxLength = 140; // Límite de caracteres
 inputContainer.appendChild(inputField);
@@ -65,6 +118,11 @@ inputContainer.appendChild(sendButton);
 
 app.appendChild(inputContainer);
 
+// ------------------------------
+
+
+
+//-----------------Funciones-----------------------
 // Función para obtener mensajes
 async function fetchMessages() {
    try {
@@ -76,6 +134,8 @@ async function fetchMessages() {
       console.error("Error obteniendo mensajes:", error);
    }
 }
+// Cargar mensajes al inicio
+fetchMessages();
 
 // Función para mostrar mensajes en el chat
 function displayMessage({ username, message }) {
@@ -96,13 +156,6 @@ function displayMessage({ username, message }) {
    messagesContainer.appendChild(messageElement);
 }
 
-// Preguntar usuario solo una vez y guardarlo en localStorage
-let username = localStorage.getItem("username");
-if (!username) {
-   username = prompt("Ingresa tu nombre de usuario:");
-   if (username) localStorage.setItem("username", username);
-}
-
 // Función para enviar mensajes
 async function sendMessage() {
    const message = inputField.value.trim();
@@ -121,6 +174,9 @@ async function sendMessage() {
    }
 }
 
+// ------------------------------
+
+// ---------------Funciones varias---------------
 
 // Manejar el botón de enviar y la tecla Enter
 sendButton.addEventListener("click", sendMessage);
@@ -133,5 +189,5 @@ inputField.addEventListener("keydown", (event) => {
 // Auto-refresh cada 5 segundos
 setInterval(fetchMessages, 5000);
 
-// Cargar mensajes al inicio
-fetchMessages();
+
+// ------------------------------
