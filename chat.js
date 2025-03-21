@@ -16,9 +16,16 @@ document.body.appendChild(app);
 // Contenedor de mensajes principal
 const messagesContainer = document.createElement("div");
 messagesContainer.style.flex = "1";
-messagesContainer.style.overflowY = "auto"; 
-messagesContainer.style.padding = "10px";
+messagesContainer.style.display = "flex";  // Asegura que los mensajes se acomoden en columna
+messagesContainer.style.flexDirection = "column";  
+messagesContainer.style.overflowY = "auto";  
+messagesContainer.style.overflowX = "hidden";  
+messagesContainer.style.maxHeight = "calc(100vh - 80px)";  // Evita que crezca demasiado
+messagesContainer.style.maxWidth = "100%";  // Evita desbordes horizontales
+messagesContainer.style.paddingBottom = "10px";  
+
 app.appendChild(messagesContainer);
+
 
 //Preferencia
 let theme = localStorage.getItem("theme") || "light";
@@ -60,6 +67,7 @@ app.appendChild(themeButton);
 
 // -----------------Boton para cambiar de usuario-----------------------
 
+//Definir usuario, si no hay usuario se pone Anónimo
 let User = localStorage.getItem("username") || "Anónimo";
 
 //Crear boton
@@ -91,14 +99,18 @@ app.appendChild(userButton);
 // Contenedor de entrada de texto
 const inputContainer = document.createElement("div");
 inputContainer.style.display = "flex";
-inputContainer.style.padding = "10px";
+inputContainer.style.position = "fixed";
+inputContainer.style.bottom = "0";
+inputContainer.style.margin = "0";
+inputContainer.style.width = "100%";
+inputContainer.style.padding = "5px";
 inputContainer.style.borderTop = "1px solid #ddd";
 
 // Campo de entrada
 const inputField = document.createElement("input");
 inputField.type = "text";
 inputField.placeholder = "Escribe tu mensaje...";
-inputField.style.flex = "1";
+inputField.style.flex = "0.9";
 inputField.style.padding = "15px";
 inputField.style.fontSize = "16px";
 inputField.maxLength = 140; // Límite de caracteres
@@ -108,7 +120,7 @@ inputContainer.appendChild(inputField);
 const sendButton = document.createElement("button");
 sendButton.textContent = "Enviar";
 sendButton.style.marginLeft = "10px";
-sendButton.style.padding = "8px 12px";
+sendButton.style.padding = "8px 19px";
 sendButton.style.cursor = "pointer";
 sendButton.style.backgroundColor = "#007bff";
 sendButton.style.color = "white";
@@ -154,6 +166,66 @@ function displayMessage({ username, message }) {
    messageElement.appendChild(textElement);
 
    messagesContainer.appendChild(messageElement);
+
+   //Poder visualizar urls y imagenes
+   const urldetect = /(https?:\/\/[^\s]+)/g;
+   const links = message.match(urldetect);
+   if (links) {
+      links.forEach(link => {
+         if(isImage(link)){
+            //mostrar preview de la imagen
+            const imgPreview = document.createElement("img");
+            imgPreview.src = link;
+            imgPreview.style.maxWidth = "100%";
+            imgPreview.style.height = "auto";
+            imgPreview.style.marginTop = "5px";
+            imgPreview.style.borderRadius = "5px";
+            imgPreview.style.display = "block";
+            messageElement.appendChild(imgPreview);
+         }else{
+            //mostrar link
+            linkPreview(link, messageElement);
+         }
+      }
+      );
+   }
+   messagesContainer.appendChild(messageElement);
+} 
+
+// Función para detectar si el link es una imagen
+function isImage(url) {
+   return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+}
+
+// Función para obtener título de una página web y crear una preview
+async function linkPreview(url, container) {
+   try {
+      const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      const data = await response.json();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, "text/html");
+      const title = doc.querySelector("title") ? doc.querySelector("title").innerText : "Vista previa";
+
+      const linkPreview = document.createElement("div");
+      linkPreview.style.marginTop = "5px";
+      linkPreview.style.padding = "8px";
+      linkPreview.style.border = "1px solid #ccc";
+      linkPreview.style.borderRadius = "5px";
+      linkPreview.style.backgroundColor = "#f8f9fa";
+      linkPreview.style.cursor = "pointer";
+
+      const linkText = document.createElement("a");
+      linkText.href = url;
+      linkText.textContent = title;
+      linkText.style.textDecoration = "none";
+      linkText.style.color = "#007bff";
+      linkText.target = "_blank";
+
+      linkPreview.appendChild(linkText);
+      container.appendChild(linkPreview);
+   } catch (error) {
+      console.error("Error obteniendo previsualización:", error);
+   }
 }
 
 // Función para enviar mensajes
