@@ -68,7 +68,7 @@ app.appendChild(themeButton);
 // -----------------Boton para cambiar de usuario-----------------------
 
 //Definir usuario, si no hay usuario se pone Anónimo
-let User = localStorage.getItem("username") || "Anónimo";
+let username = localStorage.getItem("username") || "Anónimo";
 
 //Crear boton
 const userButton = document.createElement("button");
@@ -114,7 +114,29 @@ inputField.style.flex = "0.9";
 inputField.style.padding = "15px";
 inputField.style.fontSize = "16px";
 inputField.maxLength = 140; // Límite de caracteres
+inputField.addEventListener("paste", (event) => {
+   setTimeout(() => {
+      const pastedText = inputField.value.trim();
+      
+      if (isValidUrl(pastedText)) {
+         console.log("URL pegada:", pastedText);
+         // Solo muestra el enlace en la consola, pero no genera preview
+      }
+   }, 100); // Esperamos un poco para que el input reciba el valor completo
+});
+
+
 inputContainer.appendChild(inputField);
+
+// Función para verificar si es un enlace válido
+function isValidUrl(string) {
+   const urlPattern = new RegExp('^(https?:\\/\\/)?' + // http:// o https://
+       '((([a-zA-Z0-9$_.+!*\'(),;?&=-]+)@)?' + // Usuario
+       '((\\d{1,3}\\.){3}\\d{1,3}|' + // IPv4
+       '([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}))' + // Dominio
+       '(\\:\\d+)?(\\/.*)?$', 'i'); // Puerto y ruta
+   return urlPattern.test(string);
+}
 
 // Botón de enviar
 const sendButton = document.createElement("button");
@@ -177,7 +199,7 @@ function displayMessage({ username, message }) {
             const imgPreview = document.createElement("img");
             imgPreview.src = link;
             imgPreview.style.maxWidth = "100%";
-            imgPreview.style.height = "auto";
+            imgPreview.style.height = "100px";
             imgPreview.style.marginTop = "5px";
             imgPreview.style.borderRadius = "5px";
             imgPreview.style.display = "block";
@@ -232,6 +254,8 @@ async function linkPreview(url, container) {
 async function sendMessage() {
    const message = inputField.value.trim();
    if (message === "") return;
+
+   if (!username) username = "Anónimo";
 
    try {
       await fetch(urlChat, {
