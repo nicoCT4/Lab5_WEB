@@ -3,29 +3,33 @@ const urlChat = "https://chat.nrywhite.lat/chats";
 
 // Crear contenedor principal
 const app = document.createElement("div");
-app.style.display = "flex";
-app.style.flexDirection = "column";
-app.style.height = "100vh";
-app.style.width = "100vw";
-app.style.fontFamily = "Arial, sans-serif";
+app.style.cssText = `
+   display: flex;
+   flex-direction: column;
+   height: 100vh;
+   width: 100vw;
+   font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+   position: relative;
+   overflow: hidden;
+`;
 document.body.appendChild(app);
 
-
-
-//----------------Blanco y Negro--------------------------
 // Contenedor de mensajes principal
 const messagesContainer = document.createElement("div");
-messagesContainer.style.flex = "1";
-messagesContainer.style.display = "flex";  // Asegura que los mensajes se acomoden en columna
-messagesContainer.style.flexDirection = "column";  
-messagesContainer.style.overflowY = "auto";  
-messagesContainer.style.overflowX = "hidden";  
-messagesContainer.style.maxHeight = "calc(100vh - 80px)";  // Evita que crezca demasiado
-messagesContainer.style.maxWidth = "100%";  // Evita desbordes horizontales
-messagesContainer.style.paddingBottom = "10px";  
-
+messagesContainer.style.cssText = `
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   overflow-y: auto;
+   overflow-x: hidden;
+   max-height: calc(100vh - 120px);
+   padding: 15px;
+   gap: 10px;
+   background-color: #f5f5f5;
+`;
 app.appendChild(messagesContainer);
 
+//----------------Blanco y Negro--------------------------
 
 //Preferencia
 let theme = localStorage.getItem("theme") || "light";
@@ -34,10 +38,15 @@ let theme = localStorage.getItem("theme") || "light";
 //Funcion para cambiar el tema
 function changeTheme() {
    if (theme === "dark") {
-      document.body.style.backgroundColor = "black";
-      document.body.style.color = "white";
-      messagesContainer.style.backgroundColor = "black";
-      messagesContainer.style.color = "white";
+      document.body.style.backgroundColor = "#121212";
+      messagesContainer.style.backgroundColor = "#1e1e1e";
+      messagesContainer.style.color = "#e0e0e0";
+      inputContainer.style.backgroundColor = "#2d2d2d";
+      inputContainer.style.borderTop = "1px solid #444";
+      inputField.style.backgroundColor = "#2d2d2d";
+      inputField.style.color = "#fff";
+      inputField.style.border = "1px solid #444";
+      sendButton.style.backgroundColor = "#3a3a3a";
    } else {
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
@@ -49,18 +58,33 @@ changeTheme();
 
 // Cambiar tema botón
 const themeButton = document.createElement("button");
-themeButton.textContent = "Cambiar tema";
-themeButton.style.position = "absolute";
-themeButton.style.top = "10px";
-themeButton.style.right = "10px";
-themeButton.style.padding = "8px 16px";
-themeButton.style.cursor = "pointer";
+themeButton.textContent = "🌓 Cambiar tema";
+themeButton.style.cssText = `
+   position: absolute;
+   top: 10px;
+   right: 10px;
+   padding: 8px 16px;
+   cursor: pointer;
+   border: none;
+   border-radius: 20px;
+   background-color: #4a8cff;
+   color: white;
+   font-weight: bold;
+   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+   z-index: 100;
+   transition: all 0.2s ease;
+`;
+themeButton.addEventListener("mouseover", () => {
+   themeButton.style.transform = "scale(1.05)";
+});
+themeButton.addEventListener("mouseout", () => {
+   themeButton.style.transform = "scale(1)";
+});
 themeButton.addEventListener("click", () => {
    theme = theme === "dark" ? "light" : "dark";
    localStorage.setItem("theme", theme);
    changeTheme();
-}
-);
+});
 app.appendChild(themeButton);
 
 // ------------------------------
@@ -70,17 +94,35 @@ app.appendChild(themeButton);
 //Definir usuario, si no hay usuario se pone Anónimo
 let username = localStorage.getItem("username") || "Anónimo";
 
-//Crear boton
 const userButton = document.createElement("button");
-userButton.textContent = "Cambiar usuario";
-userButton.style.position = "absolute";
-userButton.style.top = "60px";
-userButton.style.right = "10px";
-userButton.style.padding = "8px 16px";
-userButton.style.cursor = "pointer";
-userButton.style.border = "1px solid #ccc";
-userButton.style.borderRadius = "5px";
-userButton.style.backgroundColor = "#f8f9fa";
+userButton.textContent = `👤 ${username}`;
+userButton.style.cssText = `
+   position: absolute;
+   top: 50px;
+   right: 10px;
+   padding: 8px 16px;
+   cursor: pointer;
+   border: none;
+   border-radius: 20px;
+   background-color: #4a8cff;
+   color: white;
+   font-weight: bold;
+   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+   z-index: 100;
+   transition: all 0.2s ease;
+`;
+userButton.addEventListener("mouseover", () => {
+   userButton.style.transform = "scale(1.05)";
+});
+userButton.addEventListener("click", () => {
+   const newUser = prompt("Ingresa tu nombre de usuario:", username);
+   if (newUser && newUser.trim() !== "") {
+      username = newUser.trim();
+      localStorage.setItem("username", username);
+      userButton.textContent = `👤 ${username}`;
+   }
+});
+app.appendChild(userButton);
 
 //cambiar de usuario
 userButton.addEventListener("click", () => {
@@ -98,35 +140,54 @@ app.appendChild(userButton);
 
 // Contenedor de entrada de texto
 const inputContainer = document.createElement("div");
-inputContainer.style.display = "flex";
-inputContainer.style.position = "fixed";
-inputContainer.style.bottom = "0";
-inputContainer.style.margin = "0";
-inputContainer.style.width = "100%";
-inputContainer.style.padding = "5px";
-inputContainer.style.borderTop = "1px solid #ddd";
+inputContainer.style.cssText = `
+   display: flex;
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   padding: 15px;
+   background-color: #fff;
+   border-top: 1px solid #ddd;
+   box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+`;
+
+app.appendChild(inputContainer);
 
 // Campo de entrada
 const inputField = document.createElement("input");
 inputField.type = "text";
 inputField.placeholder = "Escribe tu mensaje...";
-inputField.style.flex = "0.9";
-inputField.style.padding = "15px";
-inputField.style.fontSize = "16px";
-inputField.maxLength = 140; // Límite de caracteres
+inputField.style.cssText = `
+   flex: 1;
+   padding: 12px 15px;
+   font-size: 16px;
+   border: 1px solid #ddd;
+   border-radius: 25px;
+   outline: none;
+   transition: all 0.3s ease;
+   max-width: calc(100% - 100px);
+`;
+inputField.maxLength = 140;
+inputField.addEventListener("focus", () => {
+   inputField.style.borderColor = "#4a8cff";
+   inputField.style.boxShadow = "0 0 0 2px rgba(74, 140, 255, 0.2)";
+});
+inputField.addEventListener("blur", () => {
+   inputField.style.borderColor = "#ddd";
+   inputField.style.boxShadow = "none";
+});
 inputField.addEventListener("paste", (event) => {
    setTimeout(() => {
       const pastedText = inputField.value.trim();
-      
       if (isValidUrl(pastedText)) {
          console.log("URL pegada:", pastedText);
-         // Solo muestra el enlace en la consola, pero no genera preview
       }
-   }, 100); // Esperamos un poco para que el input reciba el valor completo
+   }, 100);
 });
 
-
 inputContainer.appendChild(inputField);
+
 
 // Función para verificar si es un enlace válido
 function isValidUrl(string) {
@@ -141,16 +202,25 @@ function isValidUrl(string) {
 // Botón de enviar
 const sendButton = document.createElement("button");
 sendButton.textContent = "Enviar";
-sendButton.style.marginLeft = "10px";
-sendButton.style.padding = "8px 19px";
-sendButton.style.cursor = "pointer";
-sendButton.style.backgroundColor = "#007bff";
-sendButton.style.color = "white";
-sendButton.style.border = "none";
-sendButton.style.fontSize = "16px";
+sendButton.style.cssText = `
+   margin-left: 10px;
+   padding: 0 20px;
+   cursor: pointer;
+   background-color: #4a8cff;
+   color: white;
+   border: none;
+   border-radius: 25px;
+   font-size: 16px;
+   font-weight: bold;
+   transition: all 0.2s ease;
+`;
+sendButton.addEventListener("mouseover", () => {
+   sendButton.style.backgroundColor = "#3a7cff";
+});
+sendButton.addEventListener("mouseout", () => {
+   sendButton.style.backgroundColor = "#4a8cff";
+});
 inputContainer.appendChild(sendButton);
-
-app.appendChild(inputContainer);
 
 // ------------------------------
 
@@ -174,42 +244,58 @@ fetchMessages();
 // Función para mostrar mensajes en el chat
 function displayMessage({ username, message }) {
    const messageElement = document.createElement("div");
-   messageElement.style.padding = "5px";
-   messageElement.style.marginBottom = "5px";
-   messageElement.style.borderRadius = "5px";
-   messageElement.style.border = "1px solid #ddd";
+   messageElement.style.cssText = `
+      padding: 12px 15px;
+      margin-bottom: 5px;
+      border-radius: 15px;
+      background-color: ${username === localStorage.getItem("username") ? "#4a8cff" : "#e9e9e9"};
+      color: ${username === localStorage.getItem("username") ? "white" : "#333"};
+      align-self: ${username === localStorage.getItem("username") ? "flex-end" : "flex-start"};
+      max-width: 80%;
+      word-wrap: break-word;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: relative;
+   `;
 
-   const userElement = document.createElement("strong");
-   userElement.textContent = username + ": ";
+   const userElement = document.createElement("div");
+   userElement.textContent = username;
+   userElement.style.cssText = `
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: ${username === localStorage.getItem("username") ? "rgba(255,255,255,0.8)" : "#666"};
+      font-size: 0.9em;
+   `;
    messageElement.appendChild(userElement);
 
-   const textElement = document.createElement("span");
+   const textElement = document.createElement("div");
    textElement.textContent = message;
+   textElement.style.cssText = `
+      font-size: 1em;
+      line-height: 1.4;
+   `;
    messageElement.appendChild(textElement);
 
-   messagesContainer.appendChild(messageElement);
-
-   //Poder visualizar urls y imagenes
    const urldetect = /(https?:\/\/[^\s]+)/g;
    const links = message.match(urldetect);
    if (links) {
       links.forEach(link => {
          if(isImage(link)){
-            //mostrar preview de la imagen
             const imgPreview = document.createElement("img");
             imgPreview.src = link;
-            imgPreview.style.maxWidth = "100%";
-            imgPreview.style.height = "100px";
-            imgPreview.style.marginTop = "5px";
-            imgPreview.style.borderRadius = "5px";
-            imgPreview.style.display = "block";
+            imgPreview.style.cssText = `
+               max-width: 100%;
+               max-height: 200px;
+               margin-top: 10px;
+               border-radius: 8px;
+               display: block;
+               object-fit: contain;
+               border: 1px solid rgba(0,0,0,0.1);
+            `;
             messageElement.appendChild(imgPreview);
-         }else{
-            //mostrar link
+         } else {
             linkPreview(link, messageElement);
          }
-      }
-      );
+      });
    }
    messagesContainer.appendChild(messageElement);
 } 
@@ -287,3 +373,8 @@ setInterval(fetchMessages, 5000);
 
 
 // ------------------------------
+
+
+
+
+// -----------------CSS-----------------------
