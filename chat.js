@@ -7,17 +7,20 @@ app.style.cssText = `
    display: flex;
    flex-direction: column;
    height: 100vh;
-   width: 100vw;
+   width: 90%;
+   margin: 0 auto;
+   max-width: 900px;
    font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
    position: relative;
    overflow: hidden;
 `;
+
 document.body.appendChild(app);
 
 // Contenedor de mensajes principal
 const messagesContainer = document.createElement("div");
 messagesContainer.style.cssText = `
-   flex: 1;
+   flex: 0.9;
    display: flex;
    flex-direction: column;
    overflow-y: auto;
@@ -41,12 +44,6 @@ function changeTheme() {
       document.body.style.backgroundColor = "#121212";
       messagesContainer.style.backgroundColor = "#1e1e1e";
       messagesContainer.style.color = "#e0e0e0";
-      inputContainer.style.backgroundColor = "#2d2d2d";
-      inputContainer.style.borderTop = "1px solid #444";
-      inputField.style.backgroundColor = "#2d2d2d";
-      inputField.style.color = "#fff";
-      inputField.style.border = "1px solid #444";
-      sendButton.style.backgroundColor = "#3a3a3a";
    } else {
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
@@ -82,7 +79,6 @@ themeButton.addEventListener("mouseout", () => {
 });
 themeButton.addEventListener("click", () => {
    theme = theme === "dark" ? "light" : "dark";
-   localStorage.setItem("theme", theme);
    changeTheme();
 });
 app.appendChild(themeButton);
@@ -147,7 +143,7 @@ inputContainer.style.cssText = `
    left: 0;
    right: 0;
    padding: 15px;
-   background-color: #fff;
+   background-color: #d3d3d3;
    border-top: 1px solid #ddd;
    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
 `;
@@ -167,6 +163,7 @@ inputField.style.cssText = `
    outline: none;
    transition: all 0.3s ease;
    max-width: calc(100% - 100px);
+   background-color: #eaeaea
 `;
 inputField.maxLength = 140;
 inputField.addEventListener("focus", () => {
@@ -250,12 +247,13 @@ function displayMessage({ username, message }) {
       border-radius: 15px;
       background-color: ${username === localStorage.getItem("username") ? "#4a8cff" : "#e9e9e9"};
       color: ${username === localStorage.getItem("username") ? "white" : "#333"};
-      align-self: ${username === localStorage.getItem("username") ? "flex-end" : "flex-start"};
-      max-width: 80%;
       word-wrap: break-word;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       position: relative;
+      display: inline-block;
+      max-width: 100%;
    `;
+   
 
    const userElement = document.createElement("div");
    userElement.textContent = username;
@@ -374,7 +372,3 @@ setInterval(fetchMessages, 5000);
 
 // ------------------------------
 
-
-
-
-// -----------------CSS-----------------------
