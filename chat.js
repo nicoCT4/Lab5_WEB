@@ -79,6 +79,7 @@ themeButton.addEventListener("mouseout", () => {
 });
 themeButton.addEventListener("click", () => {
    theme = theme === "dark" ? "light" : "dark";
+   localStorage.setItem("theme", theme);
    changeTheme();
 });
 app.appendChild(themeButton);
